@@ -1,34 +1,27 @@
-version: '3'
+version: "3.7"
+
 services:
-  frontend:
-    image: svercau/time-app-frontend-dev
+  app:
+    image: node:10-alpine
+    command: sh -c "yarn install && yarn run dev"
     ports:
-      - '3000:3000'
-    restart: always
-  api:
-    image: svercau/time-app-api-dev
-    ports:
-      - '2222:5000'
-    restart: always
-    depends_on:
-      - mysql
-    environment:
-      MYSQL_DATABASE: time_db
-      MYSQL_PASSWORD: password
-      MYSQL_HOST: mysql
-      MYSQL_PORT: '3306'
-      MYSQL_USER: root
-  mysql:
-    image: mysql
+      - 3000:3000
+    working_dir: /app
     volumes:
-      - databasevolume:/var/lib/mysql
-    restart: always
+      - ./:/app
     environment:
-      MYSQL_DATABASE: time_db
-      MYSQL_ROOT_PASSWORD: password
-  adminer:
-    image: adminer
-    ports:
-      - '1111:8080'
+      MYSQL_HOST: mysql
+      MYSQL_USER: root
+      MYSQL_PASSWORD: secret
+      MYSQL_DB: todos
+
+  mysql:
+    image: mysql:5.7
+    volumes:
+      - todo-mysql-data:/var/lib/mysql
+    environment: 
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: todos
+
 volumes:
-  databasevolume:
+  todo-mysql-data:
