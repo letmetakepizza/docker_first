@@ -1,0 +1,12 @@
+ARG MAVEN_VERSION=3.8.6
+
+FROM jenkins/inbound-agent:jdk17
+
+USER root
+RUN apt-get update && apt-get install -y curl tar git nano
+RUN curl -fsSL https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz \
+| tar xz -C /opt
+ENV MAVEN_HOME /opt/apache-maven-${MAVEN_VERSION}
+ENV PATH $MAVEN_HOME/bin:$PATH
+USER jenkins
+

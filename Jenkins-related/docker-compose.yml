@@ -1,0 +1,66 @@
+version: "3"
+
+services:
+  jenkins-master:
+    image: jenkins/jenkins:lts-jdk17
+    container_name: master
+    ports: 
+      - 9559:8080
+      - 48993:50000
+    volumes:
+      - /home/mememe/DOKA/master_data:/var/jenkins_home
+      - /home/mememe/DOKA/master_usr_share:/usr/share/jenkins
+    networks: 
+      - cust_network
+
+  slave-dind-python3:
+    image: svercau/jenkins-agent-with-python3:awsdockercli
+    container_name: dsd
+    privileged: true
+    environment:
+      JENKINS_URL: http://jenkins-master:8080/
+      JENKINS_SECRET: 3f10282a4dcc14ace39552dd8769bc42f8c0bd6aaa7c80c172c17daee541077a
+      JENKINS_AGENT_NAME: DinD_python
+    volumes:
+      - /home/mememe/DOKA/agent_dind_python_data:/home/jenkins
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/bin/docker:/usr/bin/docker
+    networks:
+      - cust_network
+
+  slave-python3:
+    image: svercau/jenkins-agent-with-python3:casual
+    environment: 
+      JENKINS_URL: http://jenkins-master:8080/
+      JENKINS_SECRET: f225ab27804b94aa5f364fe383cd17fa6b68b9cdd3971fac2789e4e7b7c0551c
+      JENKINS_AGENT_NAME: elf 
+    volumes:
+      - /home/mememe/DOKA/agent_python_data:/home/jenkins
+    networks:
+      - cust_network
+
+  slave-java:
+    image: svercau/jenkins-agent-with-java_maven
+    environment:
+      JENKINS_URL: http://jenkins-master:8080/
+      JENKINS_SECRET: 3eb2e5c1cbeb0b73ba62628c9baa5d7dd13ba30c11bce65e738ddb4f6328c1ef
+      JENKINS_AGENT_NAME: istina
+    volumes:
+      - /home/mememe/DOKA/agent_java_data:/home/jenkins
+    networks:
+      - cust_network
+
+  meat-agent:
+    image: svercau/jenkins-agent-with-python3:awscli
+    environment: 
+      JENKINS_URL: http://jenkins-master:8080/
+      JENKINS_SECRET: 6c6a831acb6ebc1d9a50bf96c91a75c12165a58018880eb0812764b4e19b4092
+      JENKINS_AGENT_NAME: meat
+    volumes:
+      - /home/mememe/DOKA/agent_cli_data:/home/jenkins
+    networks:
+      - cust_network
+
+
+networks:
+  cust_network:
